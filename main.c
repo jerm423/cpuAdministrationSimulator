@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
     //thread2ref = pthread_create(&thread2, NULL, test, &params);
     //pthread_join(thread2,NULL);
-    
+
     //ret2 = pthread_create(&thread2, NULL, myfunc, (void *) msg2);
 
     //printf("Main function after pthread_create\n");
@@ -60,14 +60,29 @@ void *cpuSchedulerTask (void* arg){
     //printf("\033[2J");
 
 
-    printf("Opciones Administrativas!\n");
-    printf("\n");
-    printf("Seleccione el tipo de algoritmo con el que desea correr la simulacion:\n");
-    printf("\n");
-    printf("1.) FIFO\n");
-    printf("2.) SJF\n");
-    printf("3.) HPF\n");
-    printf("4.) Round Robin\n");
+    while (1)
+    {
+
+        char user_option [1024];
+        printf("Opciones Administrativas!\n");
+        printf("\n");
+        printf("Seleccione el tipo de algoritmo con el que desea correr la simulacion:\n");
+        printf("\n");
+        printf("1.) FIFO\n");
+        printf("2.) SJF\n");
+        printf("3.) HPF\n");
+        printf("4.) Round Robin\n");
+      printf("\n SEND (q or Q to quit) : ");
+      gets(user_option);
+
+      if (strcmp(user_option , "q") == 0 || strcmp(user_option , "Q") == 0)
+      {
+        break;
+      }
+
+
+    }
+
 
 }
 
@@ -83,88 +98,36 @@ void *jobSchedulerTask (void* arg){
 
     */
 
-    int sock, connected, bytes_recieved;  
-    int trues = 1;
+    int listenfd = 0, connfd = 0;
+    struct sockaddr_in serv_addr; 
 
-    char send_data [1024] , recv_data[1024];       
+    char sendBuff[1025];
+    time_t ticks; 
 
-        struct sockaddr_in server_addr,client_addr;    
-        int sin_size;
-        
-        if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-            perror("Socket");
-            exit(1);
-        }
+    listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    memset(&serv_addr, '0', sizeof(serv_addr));
+    memset(sendBuff, '0', sizeof(sendBuff)); 
 
-        if (setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,&trues,sizeof(int)) == -1) {
-            perror("Setsockopt");
-            exit(1);
-        }
-        
-        server_addr.sin_family = AF_INET;         
-        server_addr.sin_port = htons(5000);     
-        server_addr.sin_addr.s_addr = INADDR_ANY; 
-        bzero(&(server_addr.sin_zero),8); 
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_port = htons(5000); 
 
-        if (bind(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr))
-                                                                       == -1) {
-            perror("Unable to bind");
-            exit(1);
-        }
+    bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)); 
 
-        if (listen(sock, 5) == -1) {
-            perror("Listen");
-            exit(1);
-        }
-        
-    printf("\nTCPServer Waiting for client on port 5000");
-        fflush(stdout);
+    listen(listenfd, 10); 
 
+    while(1)
+    {
+        //printf("listening\n");
+        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
 
-        while(1)
-        {  
+        ticks = time(NULL);
+        snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
+        write(connfd, sendBuff, strlen(sendBuff)); 
 
-            sin_size = sizeof(struct sockaddr_in);
-
-            connected = accept(sock, (struct sockaddr *)&client_addr,&sin_size);
-
-            printf("\n I got a connection from (%s , %d)",
-                   inet_ntoa(client_addr.sin_addr),ntohs(client_addr.sin_port));
-
-            while (1)
-            {
-              printf("\n SEND (q or Q to quit) : ");
-              gets(send_data);
-              
-              if (strcmp(send_data , "q") == 0 || strcmp(send_data , "Q") == 0)
-              {
-                send(connected, send_data,strlen(send_data), 0); 
-                close(connected);
-                break;
-              }
-               
-              else
-                 send(connected, send_data,strlen(send_data), 0);  
-
-              bytes_recieved = recv(connected,recv_data,1024,0);
-
-              recv_data[bytes_recieved] = '\0';
-
-              if (strcmp(recv_data , "q") == 0 || strcmp(recv_data , "Q") == 0)
-              {
-                close(connected);
-                break;
-              }
-
-              else 
-              printf("\n RECIEVED DATA = %s " , recv_data);
-              fflush(stdout);
-            }
-        }       
-
-      close(sock);
-      return 0;
-        
+        close(connfd);
+        sleep(1);
+     }
 
 
 }
@@ -223,7 +186,7 @@ void *startSimulator (void* arg)
 
 
     cpuSchedulerRef = pthread_create(&cpuScheduler, NULL, jobSchedulerTask, params);
-    pthread_join(jobSheduler,NULL);
+    pthread_join(cpuScheduler,NULL);
 
 
 
