@@ -1,50 +1,48 @@
-#ifndef THREAD_H_INCLUDED
-#define THREAD_H_INCLUDED
-#endif // THREAD_H_INCLUDED
+#ifndef PROCESS_H_INCLUDED
+#define PROCESS_H_INCLUDED
+#endif // PROCESS_H_INCLUDED
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-//#include "LabyrinthStructures.h"
-
-
+/*
 
 
 /// <summary>
 /// Struct to handle the matrix threads
 /// </summary>
-typedef struct Thread {
+typedef struct Process {
 
-    int id;
-
+    int pid;
+    int burst;
+    int priority;
+    int executeCounter;
+    int waitingCounter;
     bool isActive;
 
-    //int xCoord;
-    //int yCoord;
-    pthread_t thread;
 
-
-} Thread;
+} Process;
 
 /// <summary>
 /// Strcut to handle the thread list nodes
 /// </summary>
-typedef struct Node {
+typedef struct ProcessNode {
 
-	Thread *thread;
-	struct Node* nextNode;
+	Process *process;
+	struct ProcessNode* nextNode;
 
-} Node;
+} ProcessNode;
 
 /// <summary>
 /// Struct to handle the Thread list that loops the matrix
 /// </summary>
-typedef struct ThreadList {
+typedef struct ProcessList {
 
-	Node * firstNode;
+	ProcessNode * firstNode;
 	int len;
 
-} ThreadList;
+} ProcessList;
 
+*/

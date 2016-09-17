@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1473977444 source:/home/joseph/Documents/ProcessessSimulator/main.c
+1474133184 source:/home/joseph/Documents/ProcessessSimulator/main.c
 	<pthread.h>
 	<sys/types.h>
 	<sys/socket.h>
@@ -23,14 +23,27 @@
 	<stdlib.h>
 	<time.h>
 
-1473934931 source:/home/joseph/Documents/ProcessessSimulator/params.c
+1474132529 source:/home/joseph/Documents/ProcessessSimulator/params.c
 	"params.h"
 
-1473934952 /home/joseph/Documents/ProcessessSimulator/params.h
+1474131137 /home/joseph/Documents/ProcessessSimulator/params.h
 	<stdlib.h>
 	<pthread.h>
 	<stdbool.h>
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
+	"process.h"
+
+1474131026 /home/joseph/Documents/ProcessessSimulator/process.h
+	<stdlib.h>
+	<pthread.h>
+	<stdbool.h>
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+
+1474132558 source:/home/joseph/Documents/ProcessessSimulator/process.c
+	"params.h"
+	"process.h"
 

@@ -10,6 +10,11 @@
 #include <string.h>
 #include "params.h"
 
+
+
+
+void flush ();
+
 void *startSimulator (void* arg);
 
 void *jobSchedulerTask (void* arg);
@@ -28,6 +33,7 @@ int main(int argc, char *argv[])
     params_t params;
 
     params.id = 0;
+    params.processList = createProcessList();
     pthread_mutex_init (&params.mutex , NULL);
 
     //char *msg1 = "First message";
@@ -58,37 +64,18 @@ int main(int argc, char *argv[])
 
 void *cpuSchedulerTask (void* arg){
     //printf("\033[2J");
+    
 
 
-    while (1)
-    {
-
-        char user_option [1024];
-        printf("Opciones Administrativas!\n");
-        printf("\n");
-        printf("Seleccione el tipo de algoritmo con el que desea correr la simulacion:\n");
-        printf("\n");
-        printf("1.) FIFO\n");
-        printf("2.) SJF\n");
-        printf("3.) HPF\n");
-        printf("4.) Round Robin\n");
-      printf("\n SEND (q or Q to quit) : ");
-      gets(user_option);
-
-      if (strcmp(user_option , "q") == 0 || strcmp(user_option , "Q") == 0)
-      {
-        break;
-      }
-
-
-    }
 
 
 }
 
 void *jobSchedulerTask (void* arg){
-    /*
+    
     params_t *p = (params_t*)(arg);
+    
+    /*
     incrementId(p);
     int id = getId(p);
 
@@ -96,39 +83,47 @@ void *jobSchedulerTask (void* arg){
 
     printf("PARAMS 2 ARE %d\n", id);
 
+    
+
+    createProcess(8, 5, 1, p);
+
+    createProcess(7, 2, 6, p);
+
     */
 
+
+    
     int listenfd = 0, connfd = 0;
-    struct sockaddr_in serv_addr; 
+    struct sockaddr_in serv_addr;
 
     char sendBuff[1025];
-    time_t ticks; 
+    time_t ticks;
 
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     memset(&serv_addr, '0', sizeof(serv_addr));
-    memset(sendBuff, '0', sizeof(sendBuff)); 
+    memset(sendBuff, '0', sizeof(sendBuff));
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(5000); 
+    serv_addr.sin_port = htons(5000);
 
-    bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)); 
+    bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 
-    listen(listenfd, 10); 
+    listen(listenfd, 10);
 
     while(1)
     {
         //printf("listening\n");
-        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
+        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
 
         ticks = time(NULL);
         snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
-        write(connfd, sendBuff, strlen(sendBuff)); 
+        write(connfd, sendBuff, strlen(sendBuff));
 
         close(connfd);
         sleep(1);
      }
-
+    
 
 }
 
@@ -182,15 +177,51 @@ void *startSimulator (void* arg)
 
     printf("//////////////INICIANDO HILOS HIJOS//////////////\n");
     jobShedulerRef = pthread_create(&jobSheduler, NULL, jobSchedulerTask, params);
-    //pthread_join(jobSheduler,NULL);
+    pthread_join(jobSheduler,NULL);
 
 
-    cpuSchedulerRef = pthread_create(&cpuScheduler, NULL, jobSchedulerTask, params);
-    pthread_join(cpuScheduler,NULL);
+    cpuSchedulerRef = pthread_create(&cpuScheduler, NULL, cpuSchedulerTask, params);
 
 
+
+
+    //pthread_join(cpuScheduler,NULL);
+
+    /*
+    flush();
+    while (1)
+    {
+        printf("\033[2J");
+        char user_option [1024];
+
+        printf("Opciones Administrativas!\n");
+        printf("\n");
+        printf("\n");
+        printf("1.) Imprimir cantidad de procesos ejecutados\n");
+        printf("2.) \n");
+        printf("3.) \n");
+        printf("4.) \n");
+        printf("\n Escribir (q or Q) para salir : ");
+
+      gets(user_option);
+      printf(user_option);
+
+      if (strcmp(user_option , "q") == 0 || strcmp(user_option , "Q") == 0)
+      {
+        break;
+      }
+
+
+    }
+    */
 
 	//return NULL;
 }
 
 
+void flush()
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+        ;
+}
