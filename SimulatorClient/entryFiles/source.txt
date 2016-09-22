@@ -1,0 +1,3 @@
+PID   BURST   Prioridad
+1     89       3
+2     7       2

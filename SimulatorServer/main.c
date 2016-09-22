@@ -96,7 +96,8 @@ void *jobSchedulerTask (void* arg){
     int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr;
 
-    char sendBuff[1025];
+    int bytes_recieved = 1;
+    char sendBuff[1025], recv_data[1024];
     time_t ticks;
 
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -113,12 +114,20 @@ void *jobSchedulerTask (void* arg){
 
     while(1)
     {
-        //printf("listening\n");
+        printf("listening\n");
         connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
 
+        /*
         ticks = time(NULL);
         snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
         write(connfd, sendBuff, strlen(sendBuff));
+        */
+
+        bytes_recieved = recv(connfd,recv_data,1024,0);
+
+        recv_data[bytes_recieved] = '\0';
+
+        printf("\n RECIEVED DATA = %s " , recv_data);
 
         close(connfd);
         sleep(1);

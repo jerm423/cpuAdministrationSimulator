@@ -1,0 +1,14 @@
+# depslib dependency file v1.0
+1474526986 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorClient/main.c
+	<sys/socket.h>
+	<sys/types.h>
+	<netinet/in.h>
+	<netdb.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<unistd.h>
+	<errno.h>
+	<arpa/inet.h>
+	<time.h>
+

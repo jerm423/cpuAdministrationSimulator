@@ -1,0 +1,38 @@
+# depslib dependency file v1.0
+1474493242 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/main.c
+	<pthread.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<arpa/inet.h>
+	<stdio.h>
+	<stdlib.h>
+	<unistd.h>
+	<errno.h>
+	<string.h>
+	"params.h"
+
+1474159115 /home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/params.h
+	<stdlib.h>
+	<pthread.h>
+	<stdbool.h>
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"process.h"
+
+1474159115 /home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/process.h
+	<stdlib.h>
+	<pthread.h>
+	<stdbool.h>
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+
+1474159115 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/params.c
+	"params.h"
+
+1474159115 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/process.c
+	"params.h"
+	"process.h"
+
