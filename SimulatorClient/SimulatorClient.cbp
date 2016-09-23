@@ -37,6 +37,10 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="process.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="process.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
