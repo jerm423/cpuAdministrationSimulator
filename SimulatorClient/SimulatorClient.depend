@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1474526986 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorClient/main.c
+1474661049 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorClient/main.c
 	<sys/socket.h>
 	<sys/types.h>
 	<netinet/in.h>
@@ -11,4 +11,27 @@
 	<errno.h>
 	<arpa/inet.h>
 	<time.h>
+	"process.h"
+
+1474657734 /home/joseph/Desktop/cpuAdministrationSimulator/SimulatorClient/process.h
+	<stdlib.h>
+	<pthread.h>
+	<stdbool.h>
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+
+1474659957 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorClient/process.c
+	<sys/socket.h>
+	<sys/types.h>
+	<netinet/in.h>
+	<netdb.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<unistd.h>
+	<errno.h>
+	<arpa/inet.h>
+	<time.h>
+	"process.h"
 

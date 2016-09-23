@@ -9,20 +9,70 @@
 #include <errno.h>
 #include <arpa/inet.h>
 #include <time.h>
+#include "process.h"
 
 void sendProcessToServer ();
-
 int getRandomNumber();
+void moveFileIntoArray(ProcessList *processList);
+void createSenderThreads(ProcessList *pList, ThreadList *tList);
+void joinSenderThreads(ThreadList *tList);
+
+
+
 
 int main(int argc, char *argv[])
 {
 
-    //getRandomNumber();
+    
+    while(1){
 
-    //sendProcessToServer();
+        flush();
+        
+        printf("Bienvenido al Cliente del Simulador de Algoritmos de Procesos!\n");
+        printf("\n");
+        printf("Seleccione el metodo de funcionamiento del cliente:\n");
+        printf("\n");
+        printf("1.) Cargar los procesos desde el archivo\n");
+        printf("2.) Cargar los procesos manualmente\n");
+
+        int  option;
+
+        scanf("%d", &option);
+
+        if(option == 1){
+            flush();
+            printf("Se esta iniciando la carga del archivo de procesos %s\n");
+
+            ProcessList *processList = createProcessList();
+
+            moveFileIntoArray(processList);
+
+            ThreadList *threadList = createThreadList();
+
+            createSenderThreads(processList, threadList);
 
 
+            detachThreadList(threadList);
 
+        }
+        else if(option == 2){
+            printf("Ingrese el burst que desea para el nuevo proceso\n");
+        }
+        else{
+            printf("La opcion es valida\n");
+        }
+
+        
+
+    }
+
+    return 0;
+}
+
+
+void moveFileIntoArray(ProcessList *processList){
+
+    //We open the file and read it
     FILE* file = fopen("entryFiles/source.txt", "r");
     if (file == NULL)
     {
@@ -38,6 +88,7 @@ int main(int argc, char *argv[])
     fgets(line, sizeof(line), file);
     //Get the rest of the lines
     int i = 0;
+
     while (fgets(line, sizeof(line), file)) {
 
         i = 0;
@@ -53,10 +104,6 @@ int main(int argc, char *argv[])
 
         p = NULL;
 
-        //printf("PID : %s\n", parameters[0]);
-        //printf("Burst : %s\n", parameters[1]);
-        //printf("Priority : %s\n", parameters[2]);
-
         char * comma = ",";
         char * processInfo = (char *) malloc(1 + strlen(parameters[0])+ strlen(parameters[1]) + strlen(parameters[2]) );
         strcpy(processInfo, parameters[0]);
@@ -65,27 +112,29 @@ int main(int argc, char *argv[])
         strcat(processInfo, comma);
         strcat(processInfo, parameters[2]);
 
-
-
-        printf("Enviando al servidor un proceso con parametros: %s\n", processInfo);
-
-        sleep(1);
-        //int sleepNumber = getRandomNumber();
-        pthread_t sendProcessThread;
-        int sendProcessRef;
-
-        sendProcessRef = pthread_create(&sendProcessThread, NULL, sendProcessToServer, processInfo);
-        //pthread_join(sendProcessThread,NULL);
-
-        //sendProcessToServer(processInfo );
+        Process * process = createProcess(processInfo);
+        insertProcess(process,processList);
 
     }
 
     fclose(file);
 
-
-    return 0;
 }
+
+void createSenderThreads(ProcessList *pList, ThreadList *tList){
+
+    Process * nextNode = pList->firstNode;
+
+    while(nextNode)
+    {
+        printf("Enviando al servidor un proceso con parametros: %s\n", nextNode->processInfo);
+        createThread(tList,nextNode->processInfo);
+        nextNode = nextNode->nextNode;
+        printf("\n");
+    }
+
+}
+
 
 int getRandomNumber(){
     int r, i;
@@ -93,62 +142,15 @@ int getRandomNumber(){
     M = 20;
     /* initialize random seed: */
     srand (time(NULL));
-
-    /* generate secret number between 1 and 10: */
+    /* generate secret number between 1 and 20: */
     r = M + rand() / (RAND_MAX / (N - M + 1) + 1);
-    //printf("\n%d", r);
-    //printf("\n") ;
-
     return r;
 }
 
-void sendProcessToServer (char * processInfo){
 
-    int sleepNumber = getRandomNumber();
-
-    //sleep(sleepNumber);
-
-    //printf("Estoy en el socket con:\n");
-    //printf("Proceso: %s\n", processInfo);
-    //printf("Sleep: %d\n", sleepNumber);
-
-
-    int sockfd = 0, n = 0;
-    char send_data[1024], recvBuff[1024];
-    struct sockaddr_in serv_addr;
-
-
-    memset(recvBuff, '0',sizeof(recvBuff));
-    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-
-        printf("\n Error : Could not create socket \n");
-        return 1;
-    }
-
-    memset(&serv_addr, '0', sizeof(serv_addr));
-
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(5000);
-
-    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)
-    {
-        printf("\n inet_pton error occured\n");
-        return 1;
-    }
-
-    if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-       printf("\n Error : Connect Failed \n");
-       return 1;
-    }
-
-
-    //printf("\nSEND a message (q or Q to quit) : ");
-    //gets(send_data);
-
-    send(sockfd,processInfo,strlen(processInfo), 0);
-
-    close(sockfd);
-
+void flush()
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+        ;
 }
