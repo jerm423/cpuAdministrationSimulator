@@ -9,8 +9,9 @@
 #include <time.h>
 
 typedef struct Process {
-
-    char * processInfo;
+    int pid;
+    int burst;
+    int priority;
     struct Process *nextNode;
 } Process;
 

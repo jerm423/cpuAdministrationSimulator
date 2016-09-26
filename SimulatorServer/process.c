@@ -1,5 +1,5 @@
-#include "params.h"
 #include "process.h"
+#include "params.h"
 
 
 
@@ -22,7 +22,7 @@ Process* createProcess(int pPid, int pBurst, int pPriority, void* arg)
 {
 
 
-    params_t *params = (params_t*)(arg);
+    //params_t *params = (params_t*)(arg);
     //int processLenght1 = params->processList->len;
     //printf("prcess 1 :    %d\n", processLenght1);    
 

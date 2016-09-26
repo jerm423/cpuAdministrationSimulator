@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-/*
+//#include "params.h"
+
 
 
 /// <summary>
@@ -45,4 +46,3 @@ typedef struct ProcessList {
 
 } ProcessList;
 
-*/

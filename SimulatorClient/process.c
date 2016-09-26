@@ -12,7 +12,7 @@
 #include "process.h"
 
 
-void sendProcessToServer (char * processInfo){
+void sendProcessToServer (Process * process){
 
 
     int sleepNumber = getRandomNumber();
@@ -28,6 +28,11 @@ void sendProcessToServer (char * processInfo){
     char send_data[1024], recvBuff[1024];
     struct sockaddr_in serv_addr;
 
+    char buffer[256];
+
+    buffer[0] = process->pid;
+    buffer[1] = process->burst;
+    buffer[2] = process->priority;
 
     memset(recvBuff, '0',sizeof(recvBuff));
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -58,7 +63,11 @@ void sendProcessToServer (char * processInfo){
     //printf("\nSEND a message (q or Q to quit) : ");
     //gets(send_data);
 
-    send(sockfd,processInfo,strlen(processInfo), 0);
+    //send(sockfd,processInfo,strlen(processInfo), 0);
+
+    n = write(sockfd, buffer, 255);
+    if (n < 0) 
+         printf("ERROR writing to socket");
 
     close(sockfd);
 
@@ -81,11 +90,13 @@ ProcessList* createProcessList()
 
 
 
-Process* createProcess(char *pProcessInfo)
+Process* createProcess(int pPid, int pBurst, int pPriority)
 {
     
     Process* process = (Process*)malloc(sizeof(Process));
-    process->processInfo = pProcessInfo;
+    process->pid = (int) pPid;
+    process->burst = pBurst;
+    process->priority = pPriority;
     process->nextNode = 0;
     return process;
 }
@@ -115,7 +126,7 @@ void printList(ProcessList* pList)
 
     while(nextNode)
     {
-        printf("process: %s",nextNode->processInfo);
+        printf("process: %s",nextNode->pid);
         printf("%c",' ');
         nextNode = nextNode->nextNode;
         printf("\n");
@@ -180,7 +191,7 @@ ThreadList* createThreadList()
 /// <summary>
 /// Creates a struct with a thread and put it on pList
 /// </summary>
-Thread* createThread(ThreadList *threadList, char *processInfo)
+Thread* createThread(ThreadList *threadList, Process * process)
 {
     Thread *thread = (Thread*)malloc(sizeof(Thread));
     thread->id = threadList->len;
@@ -188,7 +199,7 @@ Thread* createThread(ThreadList *threadList, char *processInfo)
 
     sleep(1);
     
-    if(pthread_create(&thread->thread, 0, sendProcessToServer, processInfo))
+    if(pthread_create(&thread->thread, 0, sendProcessToServer, process))
     {
         fprintf(stderr, "Error creating thread\n");
     }
