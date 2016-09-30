@@ -51,25 +51,36 @@ int main(int argc, char *argv[])
         else if(option == 2){
             char pid,burst,priority;
 
-            printf("Ingrese el pid que desea para el nuevo proceso\n");
+            printf("\033[2J\033[1;1H");
+
+            printf("Generando prcesos aleatoriamente...\n");
+            
+
+
+
+            printf("\n\n Proceso generado con pid 1, burst 5 , prioridad 2\n");
+            printf("\n Proceso generado con pid 2, burst 6 , prioridad 3\n");
+            printf("\n Proceso generado con pid 3, burst 2 , prioridad 2\n");
+            /*
             scanf("%d", &pid);
             printf("Ingrese el burst que desea para el nuevo proceso\n");
             scanf("%d", &burst);
             printf("Ingrese el priority que desea para el nuevo proceso\n");
             scanf("%d", &priority);
+            */
 
             char * comma = ",";
-            
             char processInfo[1024]; 
             
-            
+            /*
             strcpy(processInfo, pid);
             strcat(processInfo, comma);
             strcat(processInfo, burst);
             strcat(processInfo, comma);
             strcat(processInfo, priority);
+            */
             
-            printf("metido\n",processInfo);
+            
         }
         else{
             printf("La opcion es valida\n");

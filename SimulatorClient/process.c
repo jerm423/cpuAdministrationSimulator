@@ -53,7 +53,7 @@ void sendProcessToServer (Process * process){
         return 1;
     }
 
-    if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    if(connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
        printf("\n Error : Connect Failed \n");
        return 1;
@@ -62,11 +62,10 @@ void sendProcessToServer (Process * process){
 
     //printf("\nSEND a message (q or Q to quit) : ");
     //gets(send_data);
-
     //send(sockfd,processInfo,strlen(processInfo), 0);
 
     n = write(sockfd, buffer, 255);
-    if (n < 0) 
+    if (n < 0)
          printf("ERROR writing to socket");
 
     close(sockfd);
@@ -92,7 +91,7 @@ ProcessList* createProcessList()
 
 Process* createProcess(int pPid, int pBurst, int pPriority)
 {
-    
+
     Process* process = (Process*)malloc(sizeof(Process));
     process->pid = (int) pPid;
     process->burst = pBurst;
@@ -104,7 +103,7 @@ Process* createProcess(int pPid, int pBurst, int pPriority)
 
 void insertProcess(char *pProcess,ProcessList *pList)
 {
-    
+
     if(!pList->firstNode){
         pList->firstNode = pProcess;
     }
@@ -198,7 +197,7 @@ Thread* createThread(ThreadList *threadList, Process * process)
     insertNode(thread,threadList);
 
     sleep(1);
-    
+
     if(pthread_create(&thread->thread, 0, sendProcessToServer, process))
     {
         fprintf(stderr, "Error creating thread\n");

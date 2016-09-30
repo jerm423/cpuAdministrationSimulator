@@ -16,21 +16,22 @@ typedef struct Process {
     int burstRestante;
     int burstTotal;
     int prioridad;
+    int posicion;
     int t_llegada;
+    int enabled;
     struct Process *nextNode;
 } Process;
 
 
-typedef struct ProcessList {
-	pthread_mutex_t mutex;
-    Process * firstNode, *lastNode ;
-    int len;
 
-} ProcessList;
+typedef struct Tat_Wt_Table {
+    int pid;
+    int turnAroundTime;
+    int t_llegada;
+    int t_salida;
+    int waitingTime;
+    struct Tat_Wt_Table *nextNode;
+} Tat_Wt_Table;
 
 
-typedef struct Params {
-        //pthread_mutex_t mutex;
-        //ProcessList *processList;
 
-} Params;
