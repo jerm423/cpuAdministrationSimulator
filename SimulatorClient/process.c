@@ -12,10 +12,10 @@
 #include "process.h"
 
 
-void sendProcessToServer (Process * process){
+void sendProcessToServer (Process * process, int method){
 
 
-    int sleepNumber = getRandomNumber();
+    int sleepNumber = getRandomNumber(1,21);
     sleep(sleepNumber);
     //sleep(sleepNumber);
 

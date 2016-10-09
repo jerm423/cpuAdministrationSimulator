@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1475209996 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/main.c
+1475974940 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/main.c
 	<pthread.h>
 	<sys/types.h>
 	<sys/socket.h>
@@ -36,7 +36,7 @@
 	"params.h"
 	"process.h"
 
-1475208074 /home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/serverStructures.h
+1475385324 /home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/serverStructures.h
 	<stdlib.h>
 	<pthread.h>
 	<stdbool.h>
@@ -44,6 +44,6 @@
 	<stdlib.h>
 	<time.h>
 
-1475122767 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/serverStructures.c
+1475376061 source:/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorServer/serverStructures.c
 	"serverStructures.h"
 

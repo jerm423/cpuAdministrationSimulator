@@ -9,6 +9,13 @@
 #include <errno.h>
 #include <string.h>
 #include "serverStructures.h"
+#define COLOR_RED     "\x1b[31m"
+#define COLOR_GREEN   "\x1b[32m"
+#define COLOR_YELLOW  "\x1b[33m"
+#define COLOR_BLUE    "\x1b[34m"
+#define COLOR_MAGENTA "\x1b[35m"
+#define COLOR_CYAN    "\x1b[36m"
+#define COLOR_RESET   "\x1b[0m"
 
 /*
 
@@ -38,11 +45,11 @@ int tableLenght = 0;
 int algorithm = 0;
 
 void printReadyQueueLenght(){
-    printf("Largo de la lista de ready: %d\n", readyQueueLenght);
+    printf(COLOR_YELLOW"Largo de la lista de ready: %d\n"COLOR_RESET, readyQueueLenght);
 }
 
 void printTableLenght(){
-    printf("Largo de la lista de TAT y WT es : %d\n", tableLenght);
+    printf(COLOR_YELLOW"Largo de la lista de TAT y WT es : %d\n"COLOR_RESET, tableLenght);
 }
 
 int addElementToReadyQueue(int p_Pid, int p_Burst, int p_Prioridad, int p_Tiempo_Llegada) {
@@ -50,7 +57,7 @@ int addElementToReadyQueue(int p_Pid, int p_Burst, int p_Prioridad, int p_Tiempo
     /* reservamos memoria para el nuevo elemento */
     nuevo = (struct Process *) malloc (sizeof(struct Process));
     if (nuevo==NULL){
-        printf( "No hay memoria disponible!\n");
+        printf( COLOR_RED"\nNo hay memoria disponible!\n"COLOR_RESET);
         return 0;
     }
 
@@ -67,6 +74,7 @@ int addElementToReadyQueue(int p_Pid, int p_Burst, int p_Prioridad, int p_Tiempo
     /* el campo siguiente va a ser NULL por ser el último elemento
      de la lista */
     nuevo->nextNode = NULL;
+    nuevo->previousNode = ultimo;
 
     /* ahora metemos el nuevo elemento en la lista. lo situamos
      al final de la lista */
@@ -88,6 +96,7 @@ int addElementToReadyQueue(int p_Pid, int p_Burst, int p_Prioridad, int p_Tiempo
     else {
        /* el que hasta ahora era el último tiene que apuntar al nuevo */
        ultimo->nextNode = nuevo;
+       nuevo->previousNode = ultimo;
        /* hacemos que el nuevo sea ahora el último */
        ultimo = nuevo;
        ultimo->nextNode = NULL;
@@ -103,7 +112,7 @@ int addElementToTatTable(int p_Pid, int p_TurnAroundTime, int p_WaitingTime, int
     /* reservamos memoria para el nuevo elemento */
     nuevo = (struct Tat_Wt_Table *) malloc (sizeof(struct Tat_Wt_Table));
     if (nuevo==NULL){
-        printf( "No hay memoria disponible!\n");
+        printf(COLOR_RED"\nNo hay memoria disponible!\n"COLOR_RESET);
         return 0;
     }
 
@@ -145,29 +154,17 @@ int addElementToTatTable(int p_Pid, int p_TurnAroundTime, int p_WaitingTime, int
     //free(nuevo);
 }
 
-void disableProcessByPosition (int position){
 
-    int listCounter = 0;
-    struct Process *actual = primero;
-
-    while (listCounter < position) {
-        actual = actual->nextNode;
-        listCounter++;
-    }
-
-    actual->enabled = 0;
-
-}
 
 void printReadyQueue() {
 
     //En caso de cola vacía
     if (primero == NULL) {
-        printf("--- Cola vacia! ---\n\n");
+        printf(COLOR_BLUE"\n\n--- Cola vacia! ---\n\n"COLOR_RESET);
         return 0;
     }
 
-    printf("\n\n--------- Procesos en la cola de ready ---------\n\n");
+    printf(COLOR_CYAN"\n\n--------- Procesos en la cola de ready ---------\n\n"COLOR_RESET);
 
     struct Process *actual = primero;
 
@@ -176,12 +173,12 @@ void printReadyQueue() {
         if(actual->enabled == 1)
         {
 
-            printf("--- ID: %d ---\n", actual->pid);
-            printf("--- Burst: %d ---\n", actual->burst);
-            printf("--- Prioridad: %d ---\n", actual->prioridad);
-            printf("--- Tiempo de llegada: %d ---\n", actual->t_llegada);
-            printf("--- Enabled: %d ---\n", actual->enabled);
-            printf("\n-----------------------------------------------\n\n");
+            printf(COLOR_GREEN"--- ID: %d ---\n"COLOR_RESET, actual->pid);
+            printf(COLOR_GREEN"--- Burst: %d ---\n"COLOR_RESET, actual->burst);
+            printf(COLOR_GREEN"--- Prioridad: %d ---\n"COLOR_RESET, actual->prioridad);
+            printf(COLOR_GREEN"--- Tiempo de llegada: %d ---\n"COLOR_RESET, actual->t_llegada);
+            printf(COLOR_GREEN"--- Enabled: %d ---\n"COLOR_RESET, actual->enabled);
+            printf(COLOR_CYAN"\n-----------------------------------------------\n\n"COLOR_RESET);
 
         }
 
@@ -195,28 +192,83 @@ void printTat_Wt_Table() {
 
     //En caso de cola vacía
     if (primeroTable == NULL) {
-        printf("--- Cola de TAT y WT vacia! ---\n\n");
+        printf(COLOR_BLUE"\n\n--- Cola de TAT y WT vacia! ---\n\n"COLOR_RESET);
         return 0;
     }
 
-    printf("\n\n--------- Procesos en la tabla de TAT y WT ---------\n\n");
+    printf(COLOR_CYAN"\n\n--------- Procesos en la tabla de TAT y WT ---------\n\n"COLOR_RESET);
 
     struct Tat_Wt_Table *actual = primeroTable;
 
     while (actual) {
 
-        printf("--- ID: %d ---\n", actual->pid);
-        printf("--- turnAroundTime: %d ---\n", actual->turnAroundTime);
-        printf("--- waitingTime: %d ---\n", actual->waitingTime);
-        printf("--- tiempoLlegada: %d ---\n", actual->t_llegada);
-        printf("--- TiempoSalida: %d ---\n", actual->t_salida);
-        printf("\n-----------------------------------------------\n\n");
+        printf(COLOR_GREEN"--- ID: %d ---\n"COLOR_RESET, actual->pid);
+        printf(COLOR_GREEN"--- turnAroundTime: %d ---\n"COLOR_RESET, actual->turnAroundTime);
+        printf(COLOR_GREEN"--- waitingTime: %d ---\n"COLOR_RESET, actual->waitingTime);
+        printf(COLOR_GREEN"--- tiempoLlegada: %d ---\n"COLOR_RESET, actual->t_llegada);
+        printf(COLOR_GREEN"--- TiempoSalida: %d ---\n"COLOR_RESET, actual->t_salida);
+        printf(COLOR_CYAN"\n-----------------------------------------------\n\n"COLOR_RESET);
 
         actual = actual->nextNode;
     }
 
 }
 
+void printExecutedProcessess(){
+    printf(COLOR_CYAN"\nLa cantidad de procesos ejecutados es %d\n"COLOR_RESET,executedProcessess);
+}
+
+void printIdleCPU(){
+    printf(COLOR_CYAN"\nLa cantidad de segundos de CPU ocioso es %d\n"COLOR_RESET,cpuOcioso);
+}
+
+void printWaitingTimeAverage(){
+    
+    
+    //En caso de cola vacía
+    if (primeroTable == NULL) {
+        printf(COLOR_RED"\nEl promedio de waiting time es 0\n"COLOR_RESET);
+    }
+
+    struct Tat_Wt_Table *actual = primeroTable;
+    int waitingTimeTotal = 0;
+    float waitingTimeAverage = 0.0;
+    int loopCounter = 0;
+    while (actual) {
+        waitingTimeTotal = waitingTimeTotal + actual->waitingTime;
+        actual = actual->nextNode;
+        loopCounter ++;
+    }
+
+    waitingTimeAverage = (float)((float)waitingTimeTotal/(float)loopCounter);
+
+    printf(COLOR_RED"\nEl promedio de waiting time es %f\n"COLOR_RESET, waitingTimeAverage);
+
+}
+
+void printTatTimeAverage(){
+    
+    
+    //En caso de cola vacía
+    if (primeroTable == NULL) {
+        printf(COLOR_RED"\nEl promedio de waiting time es 0\n"COLOR_RESET);
+    }
+
+    struct Tat_Wt_Table *actual = primeroTable;
+    int tatTimeTime = 0;
+    float tatTimeAverage = 0.0;
+    int loopCounter = 0;
+    while (actual) {
+        tatTimeTime = tatTimeTime + actual->turnAroundTime;
+        actual = actual->nextNode;
+        loopCounter ++;
+    }
+
+    tatTimeAverage = (float)((float)tatTimeTime/(float)loopCounter);
+
+    printf(COLOR_RED"\nEl promedio de turn around time es %f\n"COLOR_RESET, tatTimeAverage);
+
+}
 int main(int argc, char *argv[])
 {
     //printf("Hello world!\n");
@@ -232,14 +284,14 @@ int main(int argc, char *argv[])
 void *startSimulator ()
 {
 
-    printf("Bienvenido al simulador de algoritmos de procesos!\n");
+    printf(COLOR_GREEN"Bienvenido al simulador de algoritmos de procesos!\n"COLOR_RESET);
     printf("\n");
     printf("Seleccione el tipo de algoritmo con el que desea correr la simulacion:\n");
     printf("\n");
-    printf("1.) FIFO\n");
-    printf("2.) SJF\n");
-    printf("3.) HPF\n");
-    printf("4.) Round Robin\n");
+    printf(COLOR_GREEN"1.)"COLOR_RESET" FIFO\n");
+    printf(COLOR_GREEN"2.)"COLOR_RESET" SJF\n");
+    printf(COLOR_GREEN"3.)"COLOR_RESET" HPF\n");
+    printf(COLOR_GREEN"4.)"COLOR_RESET" Round Robin\n");
     //Scan the entered option from stdin
     int  option;
     scanf("%d", &option);
@@ -262,51 +314,58 @@ void *startSimulator ()
         
 
         if(option == 1){
-            printf("El simulador correra con el algoritmo FIFO\n");
+            printf(COLOR_RED"\nEl simulador correra con el algoritmo FIFO\n"COLOR_RESET);
             algorithm = 1;
+            pthread_create(&cpuScheduler, NULL, cpuSchedulerTask, NULL);
+            pthread_detach(cpuScheduler);
             //Hilo cpuScheduler con metodo fifo
             
         }
         else if(option == 2){
             algorithm = 2;
-            printf("El simulador correra con el algoritmo SJF\n");
+            printf(COLOR_RED"\nEl simulador correra con el algoritmo SJF\n"COLOR_RESET);
+            pthread_create(&cpuScheduler, NULL, cpuSchedulerTask, NULL);
+            pthread_detach(cpuScheduler);
             //Hilo cpuScheduler con metodo sjf
             //cpuSchedulerRef = pthread_create(&cpuScheduler, NULL, cpuSchedulerTask, params);
         }
         else if(option == 3){
             algorithm = 3;
-            printf("El simulador correra con el algoritmo HPF\n");
+            printf(COLOR_RED"\nEl simulador correra con el algoritmo HPF\n"COLOR_RESET);
+            pthread_create(&cpuScheduler, NULL, cpuSchedulerTask, NULL);
+            pthread_detach(cpuScheduler);
             //Hilo cpuScheduler con metodo hpf
             //cpuSchedulerRef = pthread_create(&cpuScheduler, NULL, cpuSchedulerTask, params);
         }
         else if(option == 4){
             algorithm = 4;
-            printf("El simulador correra con el algoritmo Round Robin\n");
+            printf(COLOR_RED"\nEl simulador correra con el algoritmo Round Robin\n"COLOR_RESET);
+            pthread_create(&cpuScheduler, NULL, cpuRRSchedulerTask, NULL);
+            pthread_detach(cpuScheduler);
             //Hilo cpuScheduler con metodo rr
             //cpuSchedulerRef = pthread_create(&cpuScheduler, NULL, cpuSchedulerTask, params);
         }
 
 
-        pthread_create(&cpuScheduler, NULL, cpuSchedulerTask, NULL);
-        pthread_detach(cpuScheduler);
+        
 
         //Loop for checking simulator variables
         while(1){
 
             flush();
             printf("\n");
-            printf("Seleccione el metodo de funcionamiento del cliente:\n");
+            printf(COLOR_GREEN"Seleccione el metodo de funcionamiento del cliente:\n"COLOR_RESET);
             printf("\n");
-            printf("1.) Imprimir procesos ejecutados\n");
-            printf("2.) Imprimir largo de la lista de procesos\n");
-            printf("3.) Imprimir procesos en la cola\n");
-            printf("9.) SALIR\n");
+            printf(COLOR_GREEN"1.)"COLOR_RESET" Imprimir procesos ejecutados\n");
+            printf(COLOR_GREEN"2.)"COLOR_RESET" Imprimir largo de la lista de procesos\n");
+            printf(COLOR_GREEN"3.)"COLOR_RESET" Imprimir procesos en la cola\n");
+            printf(COLOR_GREEN"9.)"COLOR_RESET" Mostrar resultados de la simulacion y salir\n");
             //Read user input from stdin
             int  simulatorOption;
             scanf("%d", &simulatorOption);
 
             if(simulatorOption == 1){
-                printf("El valor de las varas ejecutadas es %s\n");
+                printExecutedProcessess();
             }
             else if(simulatorOption == 2){
                 printReadyQueueLenght();
@@ -321,10 +380,15 @@ void *startSimulator ()
             
             else if(simulatorOption == 9){
                 //QUIT
+                printExecutedProcessess();
+                printIdleCPU();
+                printTat_Wt_Table();
+                printWaitingTimeAverage();
+                printTatTimeAverage();
                 break;
             }
             else{
-                printf("La opcion no es valida. Intente de nuevo\n");
+                printf(COLOR_RED"La opcion no es valida. Intente de nuevo\n"COLOR_RESET);
             }
 
             printf("\n\n");
@@ -333,7 +397,7 @@ void *startSimulator ()
             //printf("\033[2J\033[1;1H");
         }//While true
 
-        printTat_Wt_Table();
+        
 
 
     }
@@ -356,16 +420,57 @@ void eliminar_elemento(int posicion) {
     }
     if (actual == primero && posicion == 0) {        
         primero = actual->nextNode;
+        primero->previousNode = NULL;
         actual = NULL;
     }
     else {
         aux = actual->nextNode;
         actual->nextNode = actual->nextNode->nextNode;
+        actual->nextNode->previousNode = actual;
         if (actual->nextNode == NULL) {
             ultimo = actual;
         }
         aux = NULL;
     }
+    //free(aux);
+    readyQueueLenght--;
+}
+
+void deleteProcessById(int pId) {   
+
+    //If the list is empty 
+    if (primero == NULL) {        
+        return;
+    }
+
+    //If there is only one element in the list 
+    if ( (primero->nextNode == NULL) && (primero->pid == pId ) ) {       
+        primero = NULL;
+        ultimo = NULL;
+        return;
+    }
+
+
+    //If the element to be deleted is the first one and there are more than one processess in the list
+    if ( (primero->nextNode != NULL) && (primero->pid == pId ) ) {        
+        primero = primero->nextNode;
+        return;
+    }
+
+
+    //If there are several elements and the one to be deleted is not the first one
+    struct Process *actual = primero;
+    struct Process *aux = primero;    
+
+    while(actual->nextNode->pid != pId){
+
+        actual = actual->nextNode;
+    }
+        
+    aux = actual->nextNode;
+    actual->nextNode = actual->nextNode->nextNode;
+
+    aux = NULL;
     //free(aux);
     readyQueueLenght--;
 }
@@ -398,15 +503,13 @@ void *jobSchedulerTask (){
         bzero(buffer,256);
         n = read(connfd,buffer,255);
         if (n < 0)
-            printf("ERROR reading from socket");
-        printf("\n\n +++ Proceso con ID %d ", (int) buffer[0]);
-        printf("con BURST %d ", (int) buffer[1]);
-        printf("y PRIORIDAD %d ", (int) buffer[2]);
-        printf("ha llegado al server. +++ \n\n");
+            printf(COLOR_RED"ERROR reading from socket"COLOR_RESET);
+        printf("\n +++ Proceso con ID %d con BURST %d y PRIORIDAD %d ha llegado al server. +++\n", (int) buffer[0], (int) buffer[1], (int) buffer[2] );
+
         //Insert incoming process in ready queue
-        //pthread_mutex_lock(&mutexReady);
+        pthread_mutex_lock(&mutexReady);
         addElementToReadyQueue((int) buffer[0], (int) buffer[1], (int) buffer[2], reloj);
-        //pthread_mutex_unlock(&mutexReady);
+        pthread_mutex_unlock(&mutexReady);
 
         close(connfd);
      }
@@ -515,6 +618,7 @@ Process *findHPFCandidate(){
 }
 
 
+
 Process *executeProcess(Process *process){
     
     
@@ -532,7 +636,7 @@ Process *executeProcess(Process *process){
     int tiempoFinalizacion = reloj;
 
     //aqui hay que meterlo en las tablas de WT y TAT
-    printf("Proceso ID: %d llego en el segundo : %d \n",process->pid ,process->t_llegada);
+    printf(COLOR_GREEN"Proceso ID: %d llego en el segundo %d entra en ejecucion\n"COLOR_RESET,process->pid ,process->t_llegada);
     
     
     int turnAroundTime = tiempoFinalizacion - process->t_llegada;
@@ -571,7 +675,7 @@ void *cpuSchedulerTask (void* arg){
 
         if(candidate == NULL){
             cpuOcioso ++;
-            printf("CPU OCIOSO!! \n");
+            printf(COLOR_RED"CPU OCIOSO!! \n"COLOR_RESET);
         }
         else{
             executeProcess(candidate);
@@ -592,7 +696,94 @@ void *cpuHPFSchedulerTask (void* arg){
 }
 
 void *cpuRRSchedulerTask (void* arg){
-    //printf("\033[2J");
+  
+    int contadorLista, posGanador;
+    int quantum = 3;
+    //En caso de que no haya procesos
+
+    while(1){
+        if (primero == NULL) {
+            cpuOcioso ++;
+            printf(COLOR_RED"CPU OCIOSO!! \n"COLOR_RESET);
+
+        }
+        else{
+            
+            struct Process *actual = primero;
+
+            if(primero->nextNode == NULL){
+                
+
+                if(primero->burstRestante <= quantum){
+
+                    if(primero->burstRestante == quantum){
+                        sleep(quantum);
+                    }
+                    else{
+                        sleep(quantum - primero->burstRestante);
+                    }
+                    int tiempoFinalizacion = reloj;
+                    //aqui hay que meterlo en las tablas de WT y TAT
+                    printf(COLOR_GREEN"Proceso RR ID: %d llego en el segundo : %d \n"COLOR_RESET,primero->pid ,primero->t_llegada);
+                    
+                    printReadyQueue();
+
+                    int turnAroundTime = tiempoFinalizacion - primero->t_llegada;
+                    int waitingTime = turnAroundTime - primero->burst;
+                    addElementToTatTable(primero->pid, turnAroundTime, waitingTime, primero->t_llegada, tiempoFinalizacion);
+                    //printf("pasa antes del print\n");
+                    //Eliminar por pid
+                    deleteProcessById(primero->pid);
+                }
+                else{
+                    sleep(quantum);
+                    primero->burstRestante = primero->burstRestante - quantum;
+                }
+            }
+
+
+            while(actual->nextNode != NULL){
+                
+              
+
+                //Recorremos cola y seleccionamos procesos por PID más pequeño
+                if(actual->burstRestante <= quantum){
+                    if(actual->burstRestante == quantum){
+                        sleep(quantum);
+                    }
+                    else{
+                        sleep(quantum - actual->burstRestante);
+                    }
+                    int tiempoFinalizacion = reloj;
+                    //aqui hay que meterlo en las tablas de WT y TAT
+                    printf(COLOR_GREEN"Proceso RR ID: %d llego en el segundo : %d \n"COLOR_RESET,actual->pid ,actual->t_llegada);
+                    
+                    printReadyQueue();
+
+                    int turnAroundTime = tiempoFinalizacion - actual->t_llegada;
+                    int waitingTime = turnAroundTime - actual->burst;
+                    addElementToTatTable(actual->pid, turnAroundTime, waitingTime, actual->t_llegada, tiempoFinalizacion);
+                    //printf("pasa antes del print\n");
+                    //Eliminar por pid
+                    deleteProcessById(actual->pid);
+                }
+                else{
+                    sleep(quantum);
+                    actual->burstRestante = actual->burstRestante - quantum;
+                }
+
+                actual=actual->nextNode;
+            }
+            
+
+        }
+
+        sleep(1);
+    }
+    
+    
+
+    
 }
 
 

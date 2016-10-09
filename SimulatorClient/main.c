@@ -10,36 +10,66 @@
 #include <arpa/inet.h>
 #include <time.h>
 #include "process.h"
+#define COLOR_RED     "\x1b[31m"
+#define COLOR_GREEN   "\x1b[32m"
+#define COLOR_YELLOW  "\x1b[33m"
+#define COLOR_BLUE    "\x1b[34m"
+#define COLOR_MAGENTA "\x1b[35m"
+#define COLOR_CYAN    "\x1b[36m"
+#define COLOR_RESET   "\x1b[0m"
 
-void sendProcessToServer ();
-int getRandomNumber();
+void sendProcessToServer(int min, int max);
+int  getRandomNumber();
 void moveFileIntoArray(ProcessList *processList);
 void createSenderThreads(ProcessList *pList, ThreadList *tList);
 void joinSenderThreads(ThreadList *tList);
 
 
+int getInt()
+{
+  int n = 0;
+  char buffer[128];
+  fgets(buffer,sizeof(buffer),stdin);
+  n = atoi(buffer);
+  return ( n > 100 || n < 1 ) ? 0 : n;
+}
 
+
+void makePause(){
+    int i;
+    for (i = 5; i > 0; --i)
+    {
+        printf("%d...\n",i);
+        sleep(1);
+    }
+}
 
 int main(int argc, char *argv[])
 {
 
-    
+
     while(1){
 
-        flush();
-        printf("Bienvenido al Cliente del Simulador de Algoritmos de Procesos!\n");
+        printf("\033[2J\033[1;1H");
+        printf(COLOR_GREEN"Bienvenido al Cliente del Simulador de Algoritmos de Procesos!"COLOR_RESET"\n");
         printf("\n");
         printf("Seleccione el metodo de funcionamiento del cliente:\n");
         printf("\n");
-        printf("1.) Cargar los procesos desde el archivo\n");
-        printf("2.) Cargar los procesos manualmente\n");
+        printf(COLOR_GREEN"1.)"COLOR_RESET" Cargar los procesos desde el archivo\n");
+        printf(COLOR_GREEN"2.)"COLOR_RESET" Cargar los procesos manualmente\n\n");
 
-        int  option;
-        scanf("%d", &option);
+        //printf(COLOR_BLUE "%c"COLOR_RESET,tmpSquare->identifier );
 
+
+        printf("Su opcion: ");
+        int  option = getInt();
+
+        //flush();
         if(option == 1){
             flush();
-            printf("Se esta iniciando la carga del archivo de procesos \n");
+            printf("\033[2J\033[1;1H");
+
+            printf(COLOR_GREEN"Se esta iniciando la carga del archivo de procesos "COLOR_RESET"\n");
 
             ProcessList *processList = createProcessList();
             moveFileIntoArray(processList);
@@ -47,44 +77,61 @@ int main(int argc, char *argv[])
             createSenderThreads(processList, threadList);
             detachThreadList(threadList);
 
+            //scanf("%s", NULL);
+
+            //flush();
+
         }
         else if(option == 2){
-            char pid,burst,priority;
-
+            //flush();
             printf("\033[2J\033[1;1H");
 
-            printf("Generando prcesos aleatoriamente...\n");
-            
+            printf("\nIngrese el tiempo de ramp-up (entre 0 y 100) en segundos para la creacion de los procesos: ");
+            int  rampUp = getInt();
+
+
+            if(rampUp >= 1 && rampUp <= 100 ){
+
+                printf("\n\nEl ramp-up para la creacion de los procesos es %d\n", rampUp);
+                printf(COLOR_YELLOW"\nPresione ENTER en cualquier momento para salir."COLOR_RESET"\n");
+                printf("\n"COLOR_GREEN"Generando prcesos aleatoriamente..."COLOR_RESET"\n");
+
+
+                int burst,priority;
+                int loopCounter = 0;
+
+                while(1){
+                    burst = getRandomNumber(1,21);
+                    priority = getRandomNumber(1,6);
+
+                    char processInfo[1024];
+                    printf("\n== Enviando proceso aleatorio con PID %d, BURST %d, PRIORITY %d==\n", loopCounter, burst, priority );
+                    sprintf( processInfo, "%d,%d,%d ",loopCounter, burst, priority );
+                    Process * process = createProcess(loopCounter,burst,priority);
+                    pthread_t thread;
+                    pthread_create(&thread, 0, sendProcessToServer, process);
+                    sleep(rampUp);
+                    loopCounter++;
+                }
+                
+            }
+            else{
+                printf(COLOR_RED"El valor ingresado para el ramp-up no es valido. Intente de nuevo."COLOR_RESET"\n");
+                makePause();
+            }
 
 
 
-            printf("\n\n Proceso generado con pid 1, burst 5 , prioridad 2\n");
-            printf("\n Proceso generado con pid 2, burst 6 , prioridad 3\n");
-            printf("\n Proceso generado con pid 3, burst 2 , prioridad 2\n");
-            /*
-            scanf("%d", &pid);
-            printf("Ingrese el burst que desea para el nuevo proceso\n");
-            scanf("%d", &burst);
-            printf("Ingrese el priority que desea para el nuevo proceso\n");
-            scanf("%d", &priority);
-            */
 
-            char * comma = ",";
-            char processInfo[1024]; 
-            
-            /*
-            strcpy(processInfo, pid);
-            strcat(processInfo, comma);
-            strcat(processInfo, burst);
-            strcat(processInfo, comma);
-            strcat(processInfo, priority);
-            */
-            
-            
+
+
         }
         else{
-            printf("La opcion es valida\n");
+            printf(COLOR_RED"La opcion no es valida"COLOR_RESET"\n");
+            makePause();
         }
+
+        //flush();
 
     }
 
@@ -95,10 +142,18 @@ int main(int argc, char *argv[])
 void moveFileIntoArray(ProcessList *processList){
 
     //We open the file and read it
-    FILE* file = fopen("../../entryFiles/source.txt", "r");
+    char fileAddress[256] = "";
+    //flush();
+    printf("Ingrese la direccion en la que se enuentra el archivo con la informacion de los procesos:\n\n" );
+    //fgets(fileAddress,sizeof(fileAddress),stdin);
+    scanf("%s",&fileAddress);
+    //printf("%s\n", fileAddress);
+    //FILE* file = fopen("/home/joseph/Desktop/cpuAdministrationSimulator/SimulatorClient/entryFiles/source.txt", "r");
+    FILE* file = fopen(fileAddress, "r");
     if (file == NULL)
     {
-        printf("Error opening file\n");
+        printf(COLOR_RED"Error opening file"COLOR_RESET"\n");
+        makePause();
         return(0);
     }
 
@@ -125,17 +180,6 @@ void moveFileIntoArray(ProcessList *processList){
 
         p = NULL;
 
-        /*
-        char * comma = ",";
-        char * processInfo = (char *) malloc(1 + strlen(parameters[0])+ strlen(parameters[1]) + strlen(parameters[2]) );
-        strcpy(processInfo, parameters[0]);
-        strcat(processInfo, comma);
-        strcat(processInfo, parameters[1]);
-        strcat(processInfo, comma);
-        strcat(processInfo, parameters[2]);
-        */
-
-        //printf("Parammm %s\n", parameters[0] );
 
         Process * process = createProcess(atoi(parameters[0]),atoi(parameters[1]),atoi(parameters[2]));
         insertProcess(process,processList);
@@ -148,8 +192,8 @@ void moveFileIntoArray(ProcessList *processList){
 
 void createSenderThreads(ProcessList *pList, ThreadList *tList){
 
-  
-    
+
+
     Process * nextNode = pList->firstNode;
 
     while(nextNode)
@@ -163,20 +207,17 @@ void createSenderThreads(ProcessList *pList, ThreadList *tList){
         printf("\n");
 
     }
-    
+
 
 }
 
 
-int getRandomNumber(){
-    int r, i;
-    int N = 1,
-    M = 20;
-    /* initialize random seed: */
-    srand (time(NULL));
-    /* generate secret number between 1 and 20: */
-    r = M + rand() / (RAND_MAX / (N - M + 1) + 1);
-    return r;
+
+int getRandomNumber(int min, int max){
+
+    srand(time(NULL));
+    return(rand()%(max-min)+min);
+
 }
 
 

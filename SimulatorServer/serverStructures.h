@@ -20,6 +20,7 @@ typedef struct Process {
     int t_llegada;
     int enabled;
     struct Process *nextNode;
+    struct Process *previousNode;
 } Process;
 
 

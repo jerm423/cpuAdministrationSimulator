@@ -1,8 +1,1 @@
 #include "serverStructures.h"
-
-
-/*
-PROCESSESS!!!!!!!!!!!!!!!!!
-*/
-
-
